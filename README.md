@@ -23,5 +23,4 @@ We are continuing to add the using instructions of our code.
 
 ## Acknowledgements
 - Thanks Chaoyang hospital for dataset annotation
-- Thanks work "Reliable Label-Efficient Learning for Biomedical Image Recognition" for using a CNN symbol from it
 
