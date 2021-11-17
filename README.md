@@ -14,7 +14,7 @@ If you use this code/data for your research, please cite our paper ["Hard Sample
 
 
 ## Data
-[Chaoyang(Google drive)](https://drive.google.com/open?id=1xsrHjn-WyHGazYtpMqHo9h2w349eYCYO&authuser=bupt.ai.cz%40gmail.com&usp=drive_fs)
+[Chaoyang(Google drive)]()
 
 DigestPath2019(processed) and Camelyon16(processed) are coming soon.
 
