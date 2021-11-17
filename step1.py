@@ -15,18 +15,16 @@ import pickle
 from data.chaoyang import CHAOYANG
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--lr', type=float, default=0.001)
-parser.add_argument('--noise_rate', type=float, help='corruption rate, should be less than 1', default=0.2)
+parser.add_argument('--lr', type=float, default=5e-4)
+parser.add_argument('--noise_rate', type=float, default=0.2)
 parser.add_argument('--noise_type', type=str, help='[pairflip, symmetric]', default='symmetric')
-
-
-parser.add_argument('--dataset', type=str, help=' cifar10, miccai', default='miccai')
+parser.add_argument('--dataset', type=str, help='chaoyang, digestpath', default='digestpath')
 parser.add_argument('--n_epoch', type=int, default=30)
 parser.add_argument('--seed', type=int, default=1)
 parser.add_argument('--print_freq', type=int, default=50)
 parser.add_argument('--num_workers', type=int, default=16, help='how many subprocesses to use for data loading')
 parser.add_argument('--num_iter_per_epoch', type=int, default=400)
-parser.add_argument('--epoch_decay_start', type=int, default=18)
+parser.add_argument('--epoch_decay_start', type=int, default=15)
 parser.add_argument('--gpu', type=int, default=0, help='gpu_id')
 
 
@@ -37,7 +35,7 @@ torch.manual_seed(args.seed)
 torch.cuda.manual_seed(args.seed)
 
 # Hyper Parameters
-batch_size = 256
+batch_size = 96
 learning_rate = args.lr
 
 # load dataset
@@ -60,13 +58,7 @@ if args.dataset == 'digestpath':
                         )
 
 
-    test_dataset = MICCAI(root="/root/miccai",
-                          json_name="test.json",
-                          train=False,
-                          transform=transforms.Compose([transforms.Resize((256, 256)), transforms.ToTensor()]),
-                          noise_type=args.noise_type,
-                          noise_rate=args.noise_rate
-                          )
+    
 
 if args.dataset == 'camelyon':
     input_channel = 3
@@ -86,39 +78,22 @@ if args.dataset == 'camelyon':
                         )
 
 
-    test_dataset = MICCAI(root="/root/camelyon16_patch",
-                          json_name="test.json",
-                          train=False,
-                          transform=transforms.Compose([transforms.Resize((256, 256)), transforms.ToTensor()]),
-                          noise_type=args.noise_type,
-                          noise_rate=args.noise_rate
-                          )
+
 if args.dataset == 'chaoyang':
     input_channel = 3
     num_classes = 4
-
-    args.epoch_decay_start = 15
-    args.n_epoch = 30
+    args.noise_rate = 0.15
+    args.epoch_decay_start = 30
+    args.n_epoch = 80
 
     train_dataset = CHAOYANG(root="/root/chaoyang-data",
-                        json_name="train_new.json",
+                        json_name="train.json",
                         train=True,
                         transform=transforms.Compose(
                             [transforms.RandomHorizontalFlip(), transforms.Resize((256, 256)),
-                                transforms.ToTensor()]),
-                        noise_type="clean",
-                        noise_rate=args.noise_rate
+                                transforms.ToTensor()])
                         )
-
-
-    test_dataset = CHAOYANG(root="/root/chaoyang-data",
-                          json_name="test_new.json",
-                          train=False,
-                          transform=transforms.Compose([transforms.Resize((256, 256)), transforms.ToTensor()]),
-                          noise_type=args.noise_type,
-                          noise_rate=args.noise_rate
-                          )
-                        
+                 
 
 
 mom1 = 0.9
@@ -143,12 +118,9 @@ def adjust_learning_rate(optimizer, epoch):
 def record_history(index, output, target, recorder):
     # pdb.set_trace()
     pred = F.softmax(output, dim=1).cpu().data
-    # pred = output.cpu().data
-    # _, pred = torch.max(F.softmax(output, dim=1).data, 1)
     for i, ind in enumerate(index):
         recorder[ind].append(pred[i][target.cpu()[i]].numpy().tolist())
-        ##save forget event below
-        # recorder[ind].append((target.cpu()[i] == pred.cpu()[i]).numpy().tolist())
+
     return
 
 
@@ -227,22 +199,15 @@ def main():
                                                drop_last=False,
                                                shuffle=True)
 
-
-    test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
-                                              batch_size=batch_size,
-                                              num_workers=args.num_workers,
-                                              drop_last=False,
-                                              shuffle=False)
     recorder = [[] for i in range(train_dataset.__len__())]
     # bulid model
     cnn = models.resnet34(pretrained=False)
     cnn.fc = nn.Linear(in_features=512, out_features=num_classes)
     cnn.cuda()
-    # print (cnn1.parameters)
     optimizer = torch.optim.Adam(cnn.parameters(), lr=learning_rate)
-    best_acc = 0
+
     epoch = 0
-    train_acc = 0
+
 
     # training
     for epoch in range(1, args.n_epoch):
@@ -252,13 +217,9 @@ def main():
 
         train_acc= train(train_loader, epoch, cnn, optimizer,recorder)
 
-        test_acc= evaluate(test_loader, cnn)
+        print('Epoch [%d/%d] train Accuracy on the %s train images: Model %.4f %% ' % (
+        epoch + 1, args.n_epoch, len(train_dataset), train_acc))
 
-
-        print('Epoch [%d/%d] test Accuracy on the %s test images: Model %.4f %% ' % (
-        epoch + 1, args.n_epoch, len(test_dataset), test_acc))
-
-    torch.save(cnn.state_dict(), 'model/%s_%d_model_iter1.pth'%(args.dataset,int(args.noise_rate*100)))
 
         
 
@@ -267,14 +228,15 @@ def main():
         pickle.dump(recorder, recordf)
 
 
-    #step2:挑选easy_dataset，得到训练区分hard和noise样本的数据
-    weight_record = np.array(recorder)[:,20:]
+    #step2:select easy samples, add noise to D_e
+    weight_record = np.array(recorder)[:,10:]
     np_train = np.array([np.mean(weight_record[i]) for i in range(len(weight_record))])
     index = np.argsort(np_train)
     filter_ratio = args.noise_rate * 1.5
     clean = index[int(len(index) * filter_ratio):]
     path_li = np.array(train_dataset.train_data)[clean].tolist()
     label_li = np.array(train_dataset.train_noisy_labels)[clean].tolist()
+    # create D_a
     clean_dataset = MICCAI(root="",
                            path_list=path_li,
                            label_list=label_li,
@@ -283,33 +245,27 @@ def main():
                                [transforms.RandomHorizontalFlip(), transforms.Resize((256, 256)),
                                 transforms.ToTensor()]),
                            noise_type=args.noise_type,
-                           noise_rate=args.noise_rate
+                           noise_rate=args.noise_rate,
+                           nb_classes = num_classes
                            )
     clean_loader = torch.utils.data.DataLoader(dataset=clean_dataset,
                                                batch_size=batch_size,
                                                num_workers=args.num_workers,
                                                drop_last=False,
                                                shuffle=True)
-    recorder3 = [[] for i in range(clean_dataset.__len__())]
+    recorder3 = [[] for i in range(clean_dataset.__len__())] # H_a
     cnn = models.resnet34(pretrained=False)
     cnn.fc = nn.Linear(in_features=512, out_features=num_classes)
     cnn.cuda()
-    # print (cnn1.parameters)
     optimizer = torch.optim.Adam(cnn.parameters(), lr=learning_rate)
-
 
     for epoch in range(1, args.n_epoch):
         # train models
         cnn.train()
         adjust_learning_rate(optimizer, epoch)
-
-        train_acc= train(clean_loader, epoch, cnn, optimizer,recorder3)
-
-        test_acc= evaluate(test_loader, cnn)
-
-        
-        print('Epoch [%d/%d] test Accuracy on the %s test images: Model %.4f %% ' % (
-        epoch + 1, args.n_epoch, len(test_dataset), test_acc))
+        train_acc= train(clean_loader, epoch, cnn, optimizer,recorder3) 
+        print('Epoch [%d/%d] train Accuracy on the %s train images: Model %.4f %% ' % (
+        epoch + 1, args.n_epoch, len(train_dataset), train_acc))
 
     with open("record/%s_%d_iter2_1.p"%(args.dataset,int(args.noise_rate*100)), 'wb') as recordf1:
         pickle.dump(recorder3, recordf1)
@@ -328,19 +284,19 @@ def main():
     record_train = torch.Tensor(record_train).cuda()
     label_train = torch.Tensor(label_train).type(torch.LongTensor).cuda()
 
-    class MLP(torch.nn.Module):  # 继承 torch 的 Module
+    class MLP(torch.nn.Module):  
         def __init__(self, n_feature, n_hidden, n_output):
-            super(MLP, self).__init__()  # 继承 __init__ 功能
-            self.hidden = torch.nn.Linear(n_feature, n_hidden)  # 隐藏层线性输出
-            self.out = torch.nn.Linear(n_hidden, n_output)  # 输出层线性输出
+            super(MLP, self).__init__()  
+            self.hidden = torch.nn.Linear(n_feature, n_hidden)  
+            self.out = torch.nn.Linear(n_hidden, n_output)  
 
         def forward(self, x):
-            # 正向传播输入值, 神经网络分析出输出值
-            x = F.relu(self.hidden(x))  # 激励函数(隐藏层的线性值)
-            x = self.out(x)  # 输出值, 但是这个不是预测值, 预测值还需要再另外计算
+            
+            x = F.relu(self.hidden(x))  
+            x = self.out(x)  
             return x
 
-    net = MLP(n_feature=record_train.shape[1], n_hidden=200, n_output=2)  # 几个类别就几个 output
+    net = MLP(n_feature=record_train.shape[1], n_hidden=200, n_output=2)  
     net = net.cuda()
     optimizer = torch.optim.SGD(net.parameters(), lr=0.02)
     loss_func = torch.nn.CrossEntropyLoss()
@@ -350,13 +306,13 @@ def main():
         loss_sigma = 0.0  #
         correct = 0.0
         total = 0.0
-        out = net(record_train)  # 喂给 net 训练数据 x, 输出分析值
+        out = net(record_train)  
 
-        loss = loss_func(out, label_train)  # 计算两者的误差
+        loss = loss_func(out, label_train)  
 
-        optimizer.zero_grad()  # 清空上一步的残余更新参数值
-        loss.backward()  # 误差反向传播, 计算参数更新值
-        optimizer.step()  # 将参数更新值施加到 net 的 parameters
+        optimizer.zero_grad()  
+        loss.backward()  
+        optimizer.step()  
 
         _, predicted = torch.max(out.data, 1)
         total += label_train.size(0)
@@ -365,15 +321,13 @@ def main():
         print("Training: Epoch[{:0>3}/{:0>3}]  Loss: {:.4f} Acc:{:.2%}".format(
             epoch + 1, max_epoch, loss_sigma, correct / total))
 
-
-    torch.save(net.state_dict(), 'model/%s_%d_CHN_net.pth'%(args.dataset,int(args.noise_rate*100)))
+    torch.save(net.state_dict(), 'model/%s_%d_EHN_net.pth'%(args.dataset,int(args.noise_rate*100)))
 
     #sample correction and selection
     correction_model = models.resnet34(pretrained=False)
     correction_model.fc = nn.Linear(in_features=512, out_features=num_classes)
-    correction_model.load_state_dict(torch.load("model/%s_%d_model_iter1.pth"%(args.dataset,int(args.noise_rate*100))))
     correction_model.cuda()
-    correction_model.eval()  # Change model to 'eval' mode.
+
     dirty = index[:int(len(index) * filter_ratio)]
     dirty_path_li = np.array(train_dataset.train_data)[dirty].tolist()
     dirty_label_li = np.array(train_dataset.train_noisy_labels)[dirty].tolist()
@@ -390,9 +344,51 @@ def main():
                                                num_workers=args.num_workers,
                                                drop_last=False,
                                                shuffle=False)
+    
+    # classify hard and noisy samples
+    record_test = torch.Tensor(recorder)[dirty].cuda()
+    net.eval()
+    out = net(record_test)
+    out.detach_()
+    _, predicted = torch.max(out.data, 1)
+    predicted = predicted.tolist()
+    noisy_list = []
+    for i in range(dirty_dataset.__len__()):
+        if predicted[i] == 1:
+            noisy_list.append(i)
+    e_h_index = list(set(index.tolist()) - set(dirty[noisy_list]))
+   
+    e_h_dataset = MICCAI(root="",
+                           path_list=np.array(train_dataset.train_data)[e_h_index].tolist(),
+                           label_list=np.array(train_dataset.train_noisy_labels)[e_h_index].tolist(),
+                           train=False,
+                           transform=transforms.Compose(
+                               [transforms.RandomHorizontalFlip(), transforms.Resize((256, 256)),
+                                transforms.ToTensor()])
+                           )
+    e_h_loader = torch.utils.data.DataLoader(dataset=e_h_dataset,
+                                               batch_size=batch_size,
+                                               num_workers=args.num_workers,
+                                               drop_last=False,
+                                               shuffle=True)
+
+    recorder4 = [[] for i in range(e_h_dataset.__len__())]#实际上没用的，随便存存
+    optimizer = torch.optim.Adam(correction_model.parameters(), lr=learning_rate)
+
+    for epoch in range(1, args.n_epoch):
+        # train correction models
+        correction_model.train()
+        adjust_learning_rate(optimizer, epoch)
+        train_acc= train(e_h_loader, epoch, correction_model, optimizer,recorder4)
+    
+        print('Epoch [%d/%d] train Accuracy on the %s train images: Model %.4f %% ' % (
+        epoch + 1, args.n_epoch, len(train_dataset), train_acc))
+
+    correction_model.eval()
+
+    # generate pseudo-labels
     pre = torch.zeros(dirty_dataset.__len__())
     p = torch.zeros(dirty_dataset.__len__())
-    #预测噪声标签的新label
     for images, labels, indexs in dirty_loader:
         images = Variable(images).cuda()
         logits1 = correction_model(images)
@@ -402,13 +398,8 @@ def main():
         p[indexs] = _.cpu().float()
     p_index = torch.argsort(p)
     pre = pre.tolist()
-    #根据历史预测是否为噪声标签
-    record_test = torch.Tensor(recorder)[dirty].cuda()
-    net.eval()
-    out = net(record_test)
-    out.detach_()
-    _, predicted = torch.max(out.data, 1)
-    predicted = predicted.tolist()
+    
+    # post-processing
     unconfirm = []
     unconfirm0 = []
     unconfirm1 = []
@@ -416,28 +407,22 @@ def main():
         if pre[i] != dirty_dataset.test_labels[i] and predicted[i] == 0: #纠正模型更改了标签，但EHN预测为hard
             unconfirm.append(i)
             unconfirm0.append(i)
-        elif pre[i] == dirty_dataset.test_labels[i] and predicted[i] == 1: #纠正模型未更改标签，但EHN预测为noise
+        elif pre[i] == dirty_dataset.test_labels[i] and predicted[i] == 1: #纠正模型未更改标签，但EHN预测为noisy
             unconfirm.append(i)
             unconfirm1.append(i)
-    #标签纠正
+    # label correction 
     for i in range(dirty_dataset.__len__()):
         train_dataset.train_noisy_labels[dirty[i]] = np.int64(pre[i])
-    #标签筛选
+    # sample selection
     # new_clean = list(set(index.tolist()) - set(dirty[p_index[:int(dirty_dataset.__len__()*args.noise_rate)]].tolist()) - set(dirty[unconfirm]))
     new_clean = list(set(index.tolist()) - set(dirty[unconfirm]))
     num = 0
     for idx in new_clean:
         if train_dataset.train_noisy_labels[idx] != train_dataset.train_labels[idx]:
             num+=1
+
     print("new_clean_len:",len(new_clean))
-    print("noise_rate:",num/len(new_clean))
-    num = 0
-    for idx in range(train_dataset.__len__()):
-        if train_dataset.train_noisy_labels[idx] != train_dataset.train_labels[idx]:
-            num+=1
-    print("noise_rate2:",num/train_dataset.__len__())
-    with open("%s_%d_step1_filtered_dataset_iter1.p"%(args.dataset,int(args.noise_rate*100)), 'wb') as f:
-        pickle.dump(train_dataset, f)
+
     train_dataset.train_data = np.array(train_dataset.train_data)[new_clean].tolist()
     train_dataset.train_noisy_labels = np.array(train_dataset.train_noisy_labels)[new_clean].tolist()
     train_dataset.noise_or_not = np.array(train_dataset.noise_or_not)[new_clean]
@@ -445,7 +430,7 @@ def main():
     with open("%s_%d_step1_filtered_dataset_iter1_over.p"%(args.dataset,int(args.noise_rate*100)), 'wb') as f:
         pickle.dump(train_dataset, f)
 
-    #step2
+
 
 if __name__ == '__main__':
     main()

@@ -6,7 +6,7 @@ import numpy as np
 import pdb
 
 # Loss functions
-def loss_access(y_1, y_2, t, ind, record_1, record_2, drop_idx1, drop_idx2):
+def loss_weight(y_1, y_2, t, ind, record_1, record_2, drop_idx1, drop_idx2):
     ind = ind.tolist()
     drop_idx1 = drop_idx1.tolist()
     drop_idx2 = drop_idx2.tolist()
