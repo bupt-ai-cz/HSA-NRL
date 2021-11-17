@@ -10,7 +10,13 @@ Take Chaoyang dataset as an example:
 
 First, run `python step1.py --dataset chaoyang` and get the "Almost clean dataset" file named "chaoyang_15_step1_filtered_dataset_iter1_over.p".
 
-Then, run `python NSHE.py --dataset chaoyang --forget_rate 0.01 --pickle_path chaoyang_15_step1_filtered_dataset_iter1_over.p` to train the model by the generated "Almost clean dataset".
+Then, run the command below to train the model by the generated "Almost clean dataset".
+
+`python NSHE.py --dataset chaoyang --forget_rate 0.01 --pickle_path chaoyang_15_step1_filtered_dataset_iter1_over.p` 
+
+(Remember to modify the dataset path before using.)
+
+
 
 ## Data
 [Chaoyang(Google drive)](https://drive.google.com/open?id=1xsrHjn-WyHGazYtpMqHo9h2w349eYCYO&authuser=bupt.ai.cz%40gmail.com&usp=drive_fs)
@@ -42,5 +48,5 @@ Some parts of our code are borrowed from [the official Co-teaching implementatio
 We are continuing to add the using instructions of our code.
 
 ## Acknowledgements
-- Thanks Chaoyang hospital for dataset annotation
+- Thanks Chaoyang hospital for dataset annotation.
 - Thanks Yi Chen for the design of Fig. 3 in our paper.
