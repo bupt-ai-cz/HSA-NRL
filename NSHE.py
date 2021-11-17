@@ -87,7 +87,7 @@ if args.dataset=='chaoyang':
     train_dataset = pickle.load(open(args.pickle_path,"rb"))
 
     test_dataset = MICCAI(root="/root/chaoyang-data",
-                          json_name="test_new.json",
+                          json_name="test.json",
                           train=False,
                           transform=transforms.Compose([transforms.Resize((256, 256)), transforms.ToTensor()]),
                           )
