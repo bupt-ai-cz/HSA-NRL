@@ -23,3 +23,5 @@ Some parts of our code are borrowed from [the official Co-teaching implementatio
 
 We are continuing to add the using instructions of our code.
 
+## Acknowledgements
+- Thanks Chaoyang hospital for dataset annotation
