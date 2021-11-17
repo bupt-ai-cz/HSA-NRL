@@ -37,7 +37,7 @@ Then, run the command below to train the model by the generated "Almost clean da
 
 This project is made freely available to academic and non-academic entities for non-commercial purposes such as academic research, teaching, scientific publications, or personal experimentation. Permission is granted to use the data given that you agree to our license terms bellow:
 
-1. That you include a reference to the Chaoyang Dataset in any work that makes use of the dataset. For research papers, cite our preferred publication; for other media cite our preferred publication or link to [our github project](https://github.com/bupt-ai-cz/HSA-NRL).
+1. That you include a reference to our paper in any work that makes use of the data/code. For research papers, cite our preferred publication; for other media cite our preferred publication or link to [our github project](https://github.com/bupt-ai-cz/HSA-NRL).
 2. That you do not distribute this dataset or modified versions. It is permissible to distribute derivative works in as far as they are abstract representations of this dataset (such as models trained on it or additional annotations that do not directly include any of our data).
 3. That you may not use the dataset or any derivative work for commercial purposes as, for example, licensing or selling the data, or using the data with a purpose to procure a commercial gain.
 4. That all rights not expressly granted to you are reserved by us.
