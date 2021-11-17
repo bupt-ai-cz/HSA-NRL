@@ -1,5 +1,22 @@
 # HSA-NRL
-This repo is the official implementation of our paper "Hard Sample Aware Noise Robust Learning for Histopathology Image Classification".
+This repo is the official implementation of our paper ["Hard Sample Aware Noise Robust Learning for Histopathology Image Classification"](https://ieeexplore.ieee.org/document/9600806).
+
+## Citation
+If you use this code/data for your research, please cite our paper ["Hard Sample Aware Noise Robust Learning for Histopathology Image Classification"](https://ieeexplore.ieee.org/document/9600806).
+
+```
+@article{zhuhard,
+  title={Hard Sample Aware Noise Robust Learning for Histopathology Image Classification},
+  author={Zhu, Chuang and Chen, Wenkai and Peng, Ting and Wang, Ying and Jin, Mulan},
+  journal={IEEE transactions on medical imaging}
+}
+```
+
+
+## Data
+[Chaoyang(Google drive)](https://drive.google.com/open?id=1xsrHjn-WyHGazYtpMqHo9h2w349eYCYO&authuser=bupt.ai.cz%40gmail.com&usp=drive_fs)
+
+DigestPath2019(processed) and Camelyon16(processed) are coming soon.
 
 ## Using instructions
 `step1.py` is the label correction phase, and `NSHE.py` is the NSHE phase. 
@@ -18,18 +35,6 @@ Then, run the command below to train the model by the generated "Almost clean da
 
 
 
-## Data
-[Chaoyang(Google drive)](https://drive.google.com/open?id=1xsrHjn-WyHGazYtpMqHo9h2w349eYCYO&authuser=bupt.ai.cz%40gmail.com&usp=drive_fs)
-
-## Citation
-
-```
-@article{zhuhard,
-  title={Hard Sample Aware Noise Robust Learning for Histopathology Image Classification},
-  author={Zhu, Chuang and Chen, Wenkai and Peng, Ting and Wang, Ying and Jin, Mulan},
-  journal={IEEE transactions on medical imaging}
-}
-```
 
 ## Contact
 
