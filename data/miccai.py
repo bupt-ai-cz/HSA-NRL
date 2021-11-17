@@ -9,7 +9,7 @@ from .utils import noisify
 
 class MICCAI(data.Dataset):
     def __init__(self, root="", json_name=None, path_list=None, label_list=None, train=True, transform=None, target_transform=None, download=False,
-                 noise_type=None, noise_rate=0.2, random_state=0):
+                 noise_type=None, noise_rate=0.2, random_state=0, nb_classes = 2):
         imgs = []
         labels = []
         if json_name:
@@ -28,7 +28,7 @@ class MICCAI(data.Dataset):
         self.train = train  # training set or test set
         self.dataset='miccai'
         self.noise_type=noise_type
-        self.nb_classes=2
+        self.nb_classes=nb_classes
         if self.train:
             self.train_data, self.train_labels = imgs,labels
             if noise_type != 'clean':

@@ -14,13 +14,13 @@ import torch.nn as nn
 import pickle
 
 
-from loss_access_global import loss_access,loss_noweight
+from loss import loss_weight,loss_noweight
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--lr', type = float, default = 5e-4)
+parser.add_argument('--lr', type = float, default = 1e-3)
 parser.add_argument('--forget_rate', type = float, help = 'forget rate', default = None)
-parser.add_argument('--dataset', type = str, help = 'miccai', default = 'miccai')
+parser.add_argument('--dataset', type = str, help = 'digestpath', default = 'digestpath')
 parser.add_argument('--n_epoch', type=int, default=30)
 parser.add_argument('--seed', type=int, default=1)
 parser.add_argument('--print_freq', type=int, default=50)
@@ -81,8 +81,8 @@ if args.dataset=='chaoyang':
 
     input_channel=3
     num_classes=4
-    args.epoch_decay_start = 15
-    args.n_epoch = 40
+    args.epoch_decay_start = 30
+    args.n_epoch = 80
     batch_size = 96
     train_dataset = pickle.load(open(args.pickle_path,"rb"))
 
@@ -186,7 +186,7 @@ def train(train_loader,epoch, model1, optimizer1, model2, m):
         if epoch < args.warm_up:# warm up
             loss_1, loss_2 = loss_noweight(logits1, logits2, labels, ind, drop_ind1, drop_ind2)
         else:
-            loss_1, loss_2 = loss_access(logits1, logits2, labels, ind, recorder1, recorder2, drop_ind1, drop_ind2)
+            loss_1, loss_2 = loss_weight(logits1, logits2, labels, ind, recorder1, recorder2, drop_ind1, drop_ind2)
 
 
         optimizer1.zero_grad()
@@ -266,17 +266,24 @@ def main():
             param_2.requires_grad = False  # not update by gradient
     #print (cnn2.parameters)
     epoch=0
+    best_acc = 0
     # training
     for epoch in range(1, args.n_epoch):
         # train models
+
         cnn1.train()
         adjust_learning_rate(optimizer1, epoch)
         cnn2.train()
         train_acc1, train_acc2=train(train_loader, epoch, cnn1, optimizer1, cnn2, m=0.999)
 
         test_acc1, test_acc2=evaluate(test_loader, cnn1, cnn2)
-
+        if test_acc1 > best_acc:
+            best_acc = test_acc1
+        if test_acc2 > best_acc:
+            best_acc = test_acc2
         print('Epoch [%d/%d] test Accuracy on the %s test images: Model1 %.4f %% Model2 %.4f %%' % (epoch+1, args.n_epoch, len(test_dataset), test_acc1, test_acc2))
+    print(best_acc)
     print(args)
+    
 if __name__=='__main__':
     main()
