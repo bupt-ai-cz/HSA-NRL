@@ -87,7 +87,7 @@ if args.dataset == 'chaoyang':
     args.n_epoch = 80
 
     train_dataset = CHAOYANG(root="/root/chaoyang-data",
-                        json_name="train_new.json",
+                        json_name="train.json",
                         train=True,
                         transform=transforms.Compose(
                             [transforms.RandomHorizontalFlip(), transforms.Resize((256, 256)),
