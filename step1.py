@@ -427,7 +427,7 @@ def main():
     train_dataset.train_noisy_labels = np.array(train_dataset.train_noisy_labels)[new_clean].tolist()
     train_dataset.noise_or_not = np.array(train_dataset.noise_or_not)[new_clean]
     train_dataset.train_labels = np.array(train_dataset.train_labels)[new_clean]
-    with open("%s_%d_step1_filtered_dataset_iter1_over.p"%(args.dataset,int(args.noise_rate*100)), 'wb') as f:
+    with open("%s_%d_step1.p"%(args.dataset,int(args.noise_rate*100)), 'wb') as f:
         pickle.dump(train_dataset, f)
 
 
