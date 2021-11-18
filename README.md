@@ -14,7 +14,7 @@ If you use this code/data for your research, please cite our paper ["Hard Sample
 
 
 ## Data
-[Chaoyang](https://bupt-ai-cz.github.io/HSA-NRL/)
+[Chaoyang]()
 
 DigestPath2019(processed) and Camelyon16(processed) are coming soon.
 
