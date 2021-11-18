@@ -25,11 +25,11 @@ Run `step1.py` first to generate the "Almost clean dataset". Then run `NSHE.py` 
 
 Take Chaoyang dataset as an example:
 
-First, run `python step1.py --dataset chaoyang` and get the "Almost clean dataset" file named "chaoyang_15_step1_filtered_dataset_iter1_over.p".
+First, run `python step1.py --dataset chaoyang` and get the "Almost clean dataset" file named "chaoyang_15_step1.p".
 
 Then, run the command below to train the model by the generated "Almost clean dataset".
 
-`python NSHE.py --dataset chaoyang --forget_rate 0.01 --pickle_path chaoyang_15_step1_filtered_dataset_iter1_over.p` 
+`python NSHE.py --dataset chaoyang --forget_rate 0.01 --pickle_path chaoyang_15_step1.p` 
 
 (Remember to modify the dataset path before using.)
 
