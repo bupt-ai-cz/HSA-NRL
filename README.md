@@ -1,4 +1,4 @@
-# HSA-NRL
+# HSA-NRL ![visitors](https://visitor-badge.glitch.me/badge?page_id=bupt-ai-cz.HSA-NRL)
 This repo is the official implementation of our paper ["Hard Sample Aware Noise Robust Learning for Histopathology Image Classification"](https://ieeexplore.ieee.org/document/9600806).
 
 ## Citation
