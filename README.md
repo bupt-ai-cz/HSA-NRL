@@ -1,6 +1,9 @@
 # HSA-NRL ![visitors](https://visitor-badge.glitch.me/badge?page_id=bupt-ai-cz.HSA-NRL)
 This repo is the official implementation of our paper ["Hard Sample Aware Noise Robust Learning for Histopathology Image Classification"](https://ieeexplore.ieee.org/document/9600806).
 
+## News
+- ⚡(2021-11-20): Chaoyang dataset was released. 
+
 ## Citation
 If you use this code/data for your research, please cite our paper ["Hard Sample Aware Noise Robust Learning for Histopathology Image Classification"](https://ieeexplore.ieee.org/document/9600806).
 
