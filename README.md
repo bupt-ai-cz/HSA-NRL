@@ -19,22 +19,23 @@ If you use this code/data for your research, please cite our paper ["Hard Sample
 ## Data
 [Chaoyang](https://bupt-ai-cz.github.io/HSA-NRL/)
 
-DigestPath2019(processed) and Camelyon16(processed) are coming soon.
 
 ## Using instructions
-`step1.py` is the label correction phase, and `NSHE.py` is the NSHE phase. 
+- **Notes:** `step1.py` is the label correction phase, `NSHE.py` is the NSHE phase. 
 
-Run `step1.py` first to generate the "Almost clean dataset". Then run `NSHE.py` to train the model by the "Almost clean dataset".
+- **Getting started:**
 
-Take Chaoyang dataset as an example:
+    Run `step1.py` first to generate the "Almost clean dataset". Then run `NSHE.py` to train the model by the "Almost clean dataset".
 
-First, run `python step1.py --dataset chaoyang` and get the "Almost clean dataset" file named "chaoyang_15_step1.p".
+    Take Chaoyang dataset as an example:
 
-Then, run the command below to train the model by the generated "Almost clean dataset".
+    First, run `python step1.py --dataset chaoyang` and get the "Almost clean dataset" file named "chaoyang_15_step1.p".
 
-`python NSHE.py --dataset chaoyang --forget_rate 0.01 --pickle_path chaoyang_15_step1.p` 
+    Then, run the command below to train the model by the generated "Almost clean dataset".
 
-(Remember to modify the dataset path before using.)
+    `python NSHE.py --dataset chaoyang --forget_rate 0.01 --pickle_path chaoyang_15_step1.p` 
+
+    (Remember to modify the dataset path before using.)
 
 ## License
 
@@ -64,7 +65,6 @@ If you have any questions, please contact us directly.
 
 Some parts of our code are borrowed from the [official Co-teaching implementation](https://github.com/bhanML/Co-teaching).
 
-We are continuing to add the using instructions of our code.
 
 ## Acknowledgements
 
