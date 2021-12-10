@@ -20,7 +20,7 @@ from loss import loss_weight,loss_noweight
 parser = argparse.ArgumentParser()
 parser.add_argument('--lr', type = float, default = 1e-3)
 parser.add_argument('--forget_rate', type = float, help = 'forget rate', default = None)
-parser.add_argument('--dataset', type = str, help = 'digestpath', default = 'digestpath')
+parser.add_argument('--dataset', type = str, default = 'chaoyang')
 parser.add_argument('--n_epoch', type=int, default=30)
 parser.add_argument('--seed', type=int, default=1)
 parser.add_argument('--print_freq', type=int, default=50)
@@ -56,22 +56,6 @@ if args.dataset=='digestpath':
     train_dataset = pickle.load(open(args.pickle_path,"rb"))
 
     test_dataset = MICCAI(root="/root/miccai",
-                          json_name="test.json",
-                          train=False,
-                          transform=transforms.Compose([transforms.Resize((256, 256)), transforms.ToTensor()]),
-                          )
-if args.dataset=='camelyon':
-
-    input_channel=3
-    num_classes=2
-    args.epoch_decay_start = 15
-    args.n_epoch = 40
-    batch_size = 96
-
-    train_dataset = pickle.load(open(args.pickle_path,"rb"))
-    print(train_dataset.__len__())
-
-    test_dataset = MICCAI(root="/root/camelyon16_patch",
                           json_name="test.json",
                           train=False,
                           transform=transforms.Compose([transforms.Resize((256, 256)), transforms.ToTensor()]),
