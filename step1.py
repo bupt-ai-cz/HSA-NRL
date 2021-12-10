@@ -18,7 +18,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--lr', type=float, default=5e-4)
 parser.add_argument('--noise_rate', type=float, default=0.2)
 parser.add_argument('--noise_type', type=str, help='[pairflip, symmetric]', default='symmetric')
-parser.add_argument('--dataset', type=str, help='chaoyang, digestpath', default='digestpath')
+parser.add_argument('--dataset', type=str, default='chaoyang')
 parser.add_argument('--n_epoch', type=int, default=30)
 parser.add_argument('--seed', type=int, default=1)
 parser.add_argument('--print_freq', type=int, default=50)
@@ -57,25 +57,6 @@ if args.dataset == 'digestpath':
                         noise_rate=args.noise_rate
                         )
 
-
-    
-
-if args.dataset == 'camelyon':
-    input_channel = 3
-    num_classes = 2
-
-    args.epoch_decay_start = 15
-    args.n_epoch = 30
-
-    train_dataset = MICCAI(root="/root/camelyon16_patch",
-                        json_name="train.json",
-                        train=True,
-                        transform=transforms.Compose(
-                            [transforms.RandomHorizontalFlip(), transforms.Resize((256, 256)),
-                                transforms.ToTensor()]),
-                        noise_type=args.noise_type,
-                        noise_rate=args.noise_rate
-                        )
 
 
 
