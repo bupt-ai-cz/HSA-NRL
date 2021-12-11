@@ -1,4 +1,4 @@
-# HSA-NRL ![visitors](https://visitor-badge.glitch.me/badge?page_id=bupt-ai-cz.HSA-NRL)
+# HSA-NRL [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/hard-sample-aware-noise-robust-learning-for/image-classification-on-chaoyang)](https://paperswithcode.com/sota/image-classification-on-chaoyang?p=hard-sample-aware-noise-robust-learning-for) ![visitors](https://visitor-badge.glitch.me/badge?page_id=bupt-ai-cz.HSA-NRL)
 This repo is the official implementation of our paper ["Hard Sample Aware Noise Robust Learning for Histopathology Image Classification"](https://ieeexplore.ieee.org/document/9600806).
 
 ## News
