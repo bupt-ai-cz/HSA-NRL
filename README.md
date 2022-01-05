@@ -1,7 +1,9 @@
 # HSA-NRL [![PWC](https://img.shields.io/endpoint.svg?url=https://paperswithcode.com/badge/hard-sample-aware-noise-robust-learning-for/image-classification-on-chaoyang)](https://paperswithcode.com/sota/image-classification-on-chaoyang?p=hard-sample-aware-noise-robust-learning-for) ![visitors](https://visitor-badge.glitch.me/badge?page_id=bupt-ai-cz.HSA-NRL) [![Tweet](https://img.shields.io/twitter/url/http/shields.io.svg?style=social)](https://twitter.com/intent/tweet?text=Codes%20and%20Data%20for%20Our%20Paper:%20"Hard:%20Sample%20Aware%20Noise%20Robust-Learning%20for%20Histopathology%20Image%20Classification"%20&url=https://github.com/bupt-ai-cz/HSA-NRL)  
 This repo is the official implementation of our paper ["Hard Sample Aware Noise Robust Learning for Histopathology Image Classification"](https://ieeexplore.ieee.org/document/9600806).
 
-![TMI-2021](img/TMI-2021.png)
+<div align="center">
+<img src="img/TMI-2021.png" height="400" width="800">
+</div>
 
 ## News
 - ⚡(2021-11-20): Chaoyang dataset was released. 
