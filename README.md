@@ -6,7 +6,7 @@ This repo is the official implementation of our paper ["Hard Sample Aware Noise 
 </div>
 
 ## News
-- ⚡(2021-11-20): Chaoyang dataset was released. 
+- ⚡(2021-11-20): Chaoyang dataset was released [HERE](https://bupt-ai-cz.github.io/HSA-NRL/). 
 
 ## Citation
 If you use this code/data for your research, please cite our paper ["Hard Sample Aware Noise Robust Learning for Histopathology Image Classification"](https://ieeexplore.ieee.org/document/9600806).
