@@ -23,6 +23,8 @@ If you use this code/data for your research, please cite our paper ["Hard Sample
 ## Data
 [Chaoyang](https://bupt-ai-cz.github.io/HSA-NRL/)
 
+- Chaoyang dataset contains 1111 normal, 842 serrated, 1404 adenocarcinoma, 664 adenoma, and 705 normal, 321 serrated, 840 adenocarcinoma, 273 adenoma samples for training and testing, respectively. (Notes: "0" means normal, "1" means serrated, "2" means adenocarinoma, and "3" means adenoma in our dataset files.)
+
 
 ## Using instructions
 - **Notes:** `step1.py` is the label correction phase, `NSHE.py` is the NSHE phase. 
@@ -73,6 +75,3 @@ Some parts of our code are borrowed from the [official Co-teaching implementatio
 ## Acknowledgements
 
 - Thanks Chaoyang hospital for dataset annotation.
-- Thanks Yi Chen for the design of Fig. 3 in our paper.
-
-
