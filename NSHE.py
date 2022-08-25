@@ -263,8 +263,10 @@ def main():
         test_acc1, test_acc2=evaluate(test_loader, cnn1, cnn2)
         if test_acc1 > best_acc:
             best_acc = test_acc1
+            torch.save(cnn1.state_dict(),"best_ckpt.pth")
         if test_acc2 > best_acc:
             best_acc = test_acc2
+            torch.save(cnn2.state_dict(),"best_ckpt.pth")
         print('Epoch [%d/%d] test Accuracy on the %s test images: Model1 %.4f %% Model2 %.4f %%' % (epoch+1, args.n_epoch, len(test_dataset), test_acc1, test_acc2))
     print(best_acc)
     print(args)
